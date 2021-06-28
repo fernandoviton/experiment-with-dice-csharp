@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -66,6 +67,33 @@ namespace DiceCollection
             }
         }
 
+        static void HistogramOfBestDieRoll(Dice dice, int nTimes)
+        {
+            Dictionary<int, int> d = new Dictionary<int, int>();
+
+            for (int i = 0; i < nTimes; ++i)
+            {
+                int rollResult = dice.Roll().ResultList.Cast<int>().Max();
+
+                if (d.ContainsKey(rollResult))
+                    d[rollResult]++;
+                else
+                    d.Add(rollResult, 1);
+            }
+
+            var sum = 0;
+            for (int i = 0; i < 1000; ++i)
+            {
+                if (d.ContainsKey(i))
+                {
+                    var percent = d[i] * 100.0 / nTimes;
+                    Console.WriteLine(i + " " + d[i] + " " + percent);
+                    sum += i * d[i];
+                }
+            }
+            Console.WriteLine($"Average: {(double)sum/nTimes}");
+        }
+
         static Die Battle(Die die1, Die die2)
         {
             var die1Roll = die1.Roll();
@@ -129,7 +157,8 @@ namespace DiceCollection
                 new Die(2),
             });
 
-            HistogramOfDiceBattle(battleDice, 10000);
+            // HistogramOfDiceBattle(battleDice, 10000);
+            HistogramOfBestDieRoll(Dice.Make(2, Die.Make(20)), 1000000);
             // HistogramOfDieRoll(Dice.Make(3, Die.Make(6)), 1000000);
             // HistogramOfDieRoll(Dice.Make(4, Die.Make(6)), 1000000);
 
